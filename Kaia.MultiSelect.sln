@@ -5,6 +5,18 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.MultiSelect.Web", "Kaia.MultiSelect.Web\Kaia.MultiSelect.Web.csproj", "{1EA2DB92-91DF-41C7-A147-23AA3C04417A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.Common", "Kaia.Common\Kaia.Common.csproj", "{39829322-AB2E-455F-8EE2-AC963CE5BE7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.Common.DataAccess", "Kaia.Common.DataAccess\Kaia.Common.DataAccess.csproj", "{105C7466-2A7D-4B0B-8422-62130C21BA71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.MultiSelect.Domain", "Kaia.MultiSelect.Domain\Kaia.MultiSelect.Domain.csproj", "{B356C9A5-CA7D-4A2F-8F9F-FD21B3FAB4AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.MultiSelect.DataAccess", "Kaia.MultiSelect.DataAccess\Kaia.MultiSelect.DataAccess.csproj", "{49098D5E-CA69-4C0F-BA79-B037B9522B54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.Common.Tests", "Kaia.Common.Tests\Kaia.Common.Tests.csproj", "{AB1C9F79-A6C4-41A9-9AFF-4D1AF927B46B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.MultiSelect.DataAccess.Tests", "Kaia.MultiSelect.DataAccess.Tests\Kaia.MultiSelect.DataAccess.Tests.csproj", "{13C908E0-A103-424A-812E-3351348D2EF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +27,30 @@ Global
 		{1EA2DB92-91DF-41C7-A147-23AA3C04417A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EA2DB92-91DF-41C7-A147-23AA3C04417A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EA2DB92-91DF-41C7-A147-23AA3C04417A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39829322-AB2E-455F-8EE2-AC963CE5BE7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39829322-AB2E-455F-8EE2-AC963CE5BE7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39829322-AB2E-455F-8EE2-AC963CE5BE7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39829322-AB2E-455F-8EE2-AC963CE5BE7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{105C7466-2A7D-4B0B-8422-62130C21BA71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{105C7466-2A7D-4B0B-8422-62130C21BA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{105C7466-2A7D-4B0B-8422-62130C21BA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{105C7466-2A7D-4B0B-8422-62130C21BA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B356C9A5-CA7D-4A2F-8F9F-FD21B3FAB4AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B356C9A5-CA7D-4A2F-8F9F-FD21B3FAB4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B356C9A5-CA7D-4A2F-8F9F-FD21B3FAB4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B356C9A5-CA7D-4A2F-8F9F-FD21B3FAB4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49098D5E-CA69-4C0F-BA79-B037B9522B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49098D5E-CA69-4C0F-BA79-B037B9522B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49098D5E-CA69-4C0F-BA79-B037B9522B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49098D5E-CA69-4C0F-BA79-B037B9522B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1C9F79-A6C4-41A9-9AFF-4D1AF927B46B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1C9F79-A6C4-41A9-9AFF-4D1AF927B46B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1C9F79-A6C4-41A9-9AFF-4D1AF927B46B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1C9F79-A6C4-41A9-9AFF-4D1AF927B46B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C908E0-A103-424A-812E-3351348D2EF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C908E0-A103-424A-812E-3351348D2EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C908E0-A103-424A-812E-3351348D2EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C908E0-A103-424A-812E-3351348D2EF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

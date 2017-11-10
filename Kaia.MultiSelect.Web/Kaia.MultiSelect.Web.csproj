@@ -114,6 +114,16 @@
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kaia.Common.DataAccess\Kaia.Common.DataAccess.csproj">
+      <Project>{105c7466-2a7d-4b0b-8422-62130c21ba71}</Project>
+      <Name>Kaia.Common.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kaia.Common\Kaia.Common.csproj">
+      <Project>{39829322-ab2e-455f-8ee2-ac963ce5be7c}</Project>
+      <Name>Kaia.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
