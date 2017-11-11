@@ -64,6 +64,7 @@
     <Compile Include="DbRepositoryBase.cs" />
     <Compile Include="DbUnitOfWorkBase.cs" />
     <Compile Include="DataAnnotations\IgnoreAttribute.cs" />
+    <Compile Include="EntityNotFoundException.cs" />
     <Compile Include="Indeterminate.cs" />
     <Compile Include="ModificationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

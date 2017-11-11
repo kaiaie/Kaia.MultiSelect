@@ -40,68 +40,64 @@ namespace Kaia.Common.DataAccess
 
         public virtual IEnumerable<TEntity> Get(IEnumerable<long> ids)
         {
-            throw new NotImplementedException();
+            // According to Dapper doc, it should be possible to pass an 
+            // IEnumerable as a Query and have it Just Work but it throws an 
+            // error with SQLite which doesn't seem to like parameterised 
+            // IN expressions... do it the long way
+            var @params = new DynamicParameters();
+            var paramNames = new List<string>();
+            var paramNo = 1;
+            foreach (var id in ids)
+            {
+                var paramName = string.Format("p{0}", paramNo);
+                @params.Add(paramName, id);
+                paramNames.Add(string.Concat("@", paramName));
+                paramNo++;
+            }
+            var keyColumnName = QueryHelper.Default.GetKeyColumnName<TEntity>();
+            var sql = string.Concat(QueryHelper.Default.GetSelectStatement<TEntity>(),
+                 " WHERE ", string.Join(" OR ", 
+                    paramNames.Select(s => string.Format("{0} = {1}", keyColumnName, s))));
+            if (Logger.IsTraceEnabled) Logger.Trace(sql);
+            using (var reader = Connection.ExecuteReader(sql,
+                @params,
+                Transaction))
+                while (reader.Read())
+                {
+                    yield return EntityBuilder.Build<TEntity>(reader);
+                }
         }
 
         public virtual TEntity Get(long id)
         {
             var sql = string.Concat(QueryHelper.Default.GetSelectStatement<TEntity>(),
                  " WHERE ", QueryHelper.Default.GetKeyColumnName<TEntity>(), " = @id");
-            Logger.Trace(sql);
+            if (Logger.IsTraceEnabled) Logger.Trace(sql);
             using (var reader = Connection.ExecuteReader(sql,
                 new { id },
                 Transaction))
                 if (reader.Read())
                 {
-                    // Because entity objects are immutable, we need to call 
-                    // the constructor, but arguments to the constructor and 
-                    // fields returned from the database may not be
-                    // in the same order
-                    // TODO Factor this out into a builder library
-                    var argValues = new List<Tuple<int, object>>();
-                    var constructor = typeof(TEntity).GetConstructors().First();
-                    var constructorArgs = constructor.GetParameters();
-                    for (var i = 0; i < reader.FieldCount; ++i)
-                    {
-                        var fieldName = reader.GetName(i).ToCamelCase();
-                        var arg = constructorArgs.Single(a => a.Name == fieldName);
-                        argValues.Add(new Tuple<int, object>(arg.Position, reader[i]));
-                    }
-                    var @params = argValues
-                        .OrderBy(v => v.Item1).Select(v => v.Item2).ToArray();
-                    return constructor.Invoke(@params) as TEntity;
+                    return EntityBuilder.Build<TEntity>(reader);
                 }
                 else
                 {
-                    throw new Exception("Not found");
+                    var exc = new EntityNotFoundException();
+                    exc.Data["Kaia.Entity"] = typeof(TEntity).FullName;
+                    exc.Data["Kaia.Id"] = id;
+                    throw exc;
                 }
         }
 
         public virtual IEnumerable<TEntity> GetAll()
         {
             var sql = QueryHelper.Default.GetSelectStatement<TEntity>();
-            Logger.Trace(sql);
+            if (Logger.IsTraceEnabled) Logger.Trace(sql);
             using (var reader = Connection.ExecuteReader(sql,
                 transaction: Transaction))
                 while (reader.Read())
                 {
-                    // Because entity objects are immutable, we need to call 
-                    // the constructor, but arguments to the constructor and 
-                    // fields returned from the database may not be
-                    // in the same order
-                    // TODO Factor this out into a builder library
-                    var argValues = new List<Tuple<int, object>>();
-                    var constructor = typeof(TEntity).GetConstructors().First();
-                    var constructorArgs = constructor.GetParameters();
-                    for (var i = 0; i < reader.FieldCount; ++i)
-                    {
-                        var fieldName = reader.GetName(i).ToCamelCase();
-                        var arg = constructorArgs.Single(a => a.Name == fieldName);
-                        argValues.Add(new Tuple<int, object>(arg.Position, reader[i]));
-                    }
-                    var @params = argValues
-                        .OrderBy(v => v.Item1).Select(v => v.Item2).ToArray();
-                    yield return constructor.Invoke(@params) as TEntity;
+                    yield return EntityBuilder.Build<TEntity>(reader);
                 }
         }
 

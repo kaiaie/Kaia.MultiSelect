@@ -36,5 +36,22 @@ namespace Kaia.MultiSelect.DataAccess.Tests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.SupplierId == supplierId);
         }
+
+        [TestMethod]
+        public void CanGetSomeSuppliers()
+        {
+            // Arrange
+            var sut = new UnitOfWork("System.Data.SQLite",
+                @"Data Source=C:\Users\ken\Source\Repos\Kaia.MultiSelect\Kaia.MultiSelect.Database\MultiSelect.sqlite3;Version=3;");
+            var supplierIds = new long[] { 2L, 3L, 100L };
+
+            // Act
+            var result = sut.SupplierRepository.Get(supplierIds)
+                .ToList();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Count == 2);
+        }
     }
 }
