@@ -16,10 +16,12 @@ namespace Kaia.Common.DataAccess
         private readonly ILogger _logger;
         private readonly IDbConnection _connection;
         private readonly IDbTransaction _transaction;
+        private readonly QueryHelper _queryHelper;
 
         private DbRepositoryBase()
         {
             _logger = LogManager.GetLogger(GetType().FullName);
+            _queryHelper = QueryHelper.Default;
         }
 
         public DbRepositoryBase(IDbConnection connection, IDbTransaction transaction) : 
@@ -32,50 +34,44 @@ namespace Kaia.Common.DataAccess
         protected ILogger Logger { get { return _logger; } }
         protected IDbConnection Connection { get { return _connection; } }
         protected IDbTransaction Transaction { get { return _transaction; } }
+        protected QueryHelper QueryHelper { get { return _queryHelper; } }
 
-        public virtual void Create(TNewEntity newEntity)
+        public virtual long Create(TNewEntity newEntity)
         {
-            throw new NotImplementedException();
+            var query = QueryHelper.GetInsertQuery<TEntity>();
+            if (Logger.IsTraceEnabled) Logger.Trace(query);
+            using (var reader = Connection.ExecuteReader(query.Sql, 
+                newEntity, Transaction))
+            {
+                reader.Read();
+                return (long)reader[0];
+            }
         }
+
 
         public virtual IEnumerable<TEntity> Get(IEnumerable<long> ids)
         {
-            // According to Dapper doc, it should be possible to pass an 
-            // IEnumerable as a Query and have it Just Work but it throws an 
-            // error with SQLite which doesn't seem to like parameterised 
-            // IN expressions... do it the long way
-            var @params = new DynamicParameters();
-            var paramNames = new List<string>();
-            var paramNo = 1;
-            foreach (var id in ids)
+            var query = QueryHelper.GetSelectManyQuery<TEntity>(ids);
+            if (Logger.IsTraceEnabled) Logger.Trace(query.Sql);
+            using (var reader = Connection.ExecuteReader(query.Sql, 
+                query.Parameters, Transaction))
             {
-                var paramName = string.Format("p{0}", paramNo);
-                @params.Add(paramName, id);
-                paramNames.Add(string.Concat("@", paramName));
-                paramNo++;
-            }
-            var keyColumnName = QueryHelper.Default.GetKeyColumnName<TEntity>();
-            var sql = string.Concat(QueryHelper.Default.GetSelectStatement<TEntity>(),
-                 " WHERE ", string.Join(" OR ", 
-                    paramNames.Select(s => string.Format("{0} = {1}", keyColumnName, s))));
-            if (Logger.IsTraceEnabled) Logger.Trace(sql);
-            using (var reader = Connection.ExecuteReader(sql,
-                @params,
-                Transaction))
                 while (reader.Read())
                 {
                     yield return EntityBuilder.Build<TEntity>(reader);
                 }
+            }
         }
+
 
         public virtual TEntity Get(long id)
         {
-            var sql = string.Concat(QueryHelper.Default.GetSelectStatement<TEntity>(),
-                 " WHERE ", QueryHelper.Default.GetKeyColumnName<TEntity>(), " = @id");
+            var sql = string.Concat(QueryHelper.GetSelectAllQuery<TEntity>().Sql,
+                 " WHERE ", QueryHelper.GetKeyColumnName<TEntity>(), " = @id");
             if (Logger.IsTraceEnabled) Logger.Trace(sql);
-            using (var reader = Connection.ExecuteReader(sql,
-                new { id },
+            using (var reader = Connection.ExecuteReader(sql, new { id }, 
                 Transaction))
+            {
                 if (reader.Read())
                 {
                     return EntityBuilder.Build<TEntity>(reader);
@@ -87,23 +83,44 @@ namespace Kaia.Common.DataAccess
                     exc.Data["Kaia.Id"] = id;
                     throw exc;
                 }
+            }
         }
+
 
         public virtual IEnumerable<TEntity> GetAll()
         {
-            var sql = QueryHelper.Default.GetSelectStatement<TEntity>();
-            if (Logger.IsTraceEnabled) Logger.Trace(sql);
-            using (var reader = Connection.ExecuteReader(sql,
-                transaction: Transaction))
+            var query = QueryHelper.GetSelectAllQuery<TEntity>();
+            if (Logger.IsTraceEnabled) Logger.Trace(query);
+            using (var reader = Connection.ExecuteReader(query.Sql, null, 
+                Transaction))
+            {
                 while (reader.Read())
                 {
                     yield return EntityBuilder.Build<TEntity>(reader);
                 }
+            }
         }
 
-        public virtual void Modify(TEntityModifier entitiesToUpdate)
+
+        public virtual long Modify(TEntityModifier entitiesToUpdate)
         {
-            throw new NotImplementedException();
+            QueryComponents query = null;
+            switch (entitiesToUpdate.ModificationType)
+            {
+                case ModificationType.Update:
+                    query = 
+                        QueryHelper.GetUpdateQuery(entitiesToUpdate);
+                    break;
+                case ModificationType.Duplicate:
+                    query =
+                        QueryHelper.GetDuplicateQuery(entitiesToUpdate);
+                    break;
+                case ModificationType.Delete:
+                    query =
+                        QueryHelper.GetDeleteQuery(entitiesToUpdate);
+                    break;
+            }
+            return Connection.Execute(query.Sql, query.Parameters, Transaction);
         }
     }
 }

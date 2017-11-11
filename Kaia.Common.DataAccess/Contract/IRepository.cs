@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Kaia.Common.DataAccess.Contract
 {
@@ -17,8 +13,8 @@ namespace Kaia.Common.DataAccess.Contract
 
         IEnumerable<TEntity> Get(IEnumerable<long> ids);
 
-        void Create(TNewEntity newEntity);
+        long Create(TNewEntity newEntity);
 
-        void Modify(TEntityModifier entitiesToUpdate);
+        long Modify(TEntityModifier entitiesToUpdate);
     }
 }

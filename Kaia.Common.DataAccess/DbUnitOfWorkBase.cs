@@ -23,6 +23,7 @@ namespace Kaia.Common.DataAccess
             _connection = dbf.CreateConnection();
             _connection.ConnectionString = connectionString;
             _connection.Open();
+            _transaction = _connection.BeginTransaction();
         }
 
         public DbUnitOfWorkBase(ConnectionStringSettings connectionString) :

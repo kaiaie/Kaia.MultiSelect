@@ -26,6 +26,7 @@ namespace Kaia.MultiSelect.Domain
             var ids = new List<long>();
             foreach (var supplier in suppliers)
             {
+                ids.Add(supplier.SupplierId);
                 if (supplierName == null)
                 {
                     supplierName = 

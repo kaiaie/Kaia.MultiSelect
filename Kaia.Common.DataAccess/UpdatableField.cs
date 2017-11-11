@@ -2,7 +2,7 @@
 
 namespace Kaia.Common.DataAccess
 {
-    public sealed class UpdatableField<T> : IIndeterminate
+    public sealed class UpdatableField<T> : IIndeterminate, IUpdatable
     {
         private Indeterminate<T> _oldValue;
         private T _newValue;
