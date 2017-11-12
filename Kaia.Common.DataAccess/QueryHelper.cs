@@ -88,17 +88,36 @@ namespace Kaia.Common.DataAccess
         }
 
 
-        public string GetKeyPropertyName<T>()
+        public bool IsPropertyUnique<T>(string propertyName)
         {
-            var entityType = typeof(T);
-            var entityTypeAttribute = entityType.GetCustomAttributes()
+            var result = false;
+            var entityType = GetEntityType(typeof(T));
+            var prop = entityType.GetProperty(propertyName);
+            if (prop != null)
+            {
+                result = prop.GetCustomAttributes()
+                    .Any(a => a.GetType() == typeof(UniqueAttribute));
+            }
+            return result;
+        }
+
+
+        public Type GetEntityType(Type currentType)
+        {
+            var entityTypeAttribute = currentType.GetCustomAttributes()
                 .FirstOrDefault(a => a.GetType() == typeof(EntityAttribute))
                 as EntityAttribute;
             if (entityTypeAttribute != null)
             {
-                entityType = entityTypeAttribute.EntityType;
+                return entityTypeAttribute.EntityType;
             }
+            return currentType;
+        }
 
+
+        public string GetKeyPropertyName<T>()
+        {
+            var entityType = GetEntityType(typeof(T));
             return GetEntityProperties(entityType)
                 .First(p => p.GetCustomAttributes() // XXX Assume only one key (for now!)
                     .Any(a => a.GetType() == typeof(KeyAttribute)))
@@ -218,11 +237,16 @@ namespace Kaia.Common.DataAccess
             foreach (var prop in props)
             {
                 if (!isFirst) selectSql.Append(", ");
-                if (IsPropertyUpdated(prop, entitiesToUpdate))
+                if (IsPropertyUnique<T>(prop.Name))
                 {
-                    selectSql.AppendFormat("@{0} AS {1}", prop.Name, 
+                    selectSql.AppendFormat("'Copy of ' || {0} AS {0}",
                         prop.Name.ToSnakeCaseLower());
-                    @params.Add(prop.Name, GetUpdatablePropertyValue(prop, 
+                }
+                else if (IsPropertyUpdated(prop, entitiesToUpdate))
+                {
+                    selectSql.AppendFormat("@{0} AS {1}", prop.Name,
+                        prop.Name.ToSnakeCaseLower());
+                    @params.Add(prop.Name, GetUpdatablePropertyValue(prop,
                         entitiesToUpdate));
                 }
                 else
