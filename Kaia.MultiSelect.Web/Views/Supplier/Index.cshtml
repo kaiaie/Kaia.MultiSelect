@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Kaia.MultiSelect.Domain.Supplier>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@using (Html.BeginForm("Action", null, FormMethod.Get))
+{
+    <div class="action-bar">
+        <button type="button" class="btn" name="action" value="new" title="Create a new Supplier">New</button> 
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SupplierName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.City)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Text)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.RowCheckboxFor(modelItem => item.SupplierId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SupplierName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.City)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Text)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

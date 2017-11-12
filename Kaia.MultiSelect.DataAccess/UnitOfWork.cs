@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace Kaia.MultiSelect.DataAccess
 {
-    public sealed class UnitOfWork : DbUnitOfWorkBase
+    public sealed class UnitOfWork : DbUnitOfWorkBase, IUnitOfWork
     {
         private ISupplierRepository _supplierRepository;
 

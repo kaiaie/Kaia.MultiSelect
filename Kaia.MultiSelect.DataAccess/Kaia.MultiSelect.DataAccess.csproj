@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contract\ISupplierRepository.cs" />
+    <Compile Include="Contract\IUnitOfWork.cs" />
     <Compile Include="SupplierRepository.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
