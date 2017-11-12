@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.Common.Tests", "Kaia.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.MultiSelect.DataAccess.Tests", "Kaia.MultiSelect.DataAccess.Tests\Kaia.MultiSelect.DataAccess.Tests.csproj", "{13C908E0-A103-424A-812E-3351348D2EF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaia.Common.Web", "Kaia.Common.Web\Kaia.Common.Web.csproj", "{68A0D02F-E63C-49F4-9551-2D175E145D54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{13C908E0-A103-424A-812E-3351348D2EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13C908E0-A103-424A-812E-3351348D2EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13C908E0-A103-424A-812E-3351348D2EF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68A0D02F-E63C-49F4-9551-2D175E145D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A0D02F-E63C-49F4-9551-2D175E145D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68A0D02F-E63C-49F4-9551-2D175E145D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68A0D02F-E63C-49F4-9551-2D175E145D54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
