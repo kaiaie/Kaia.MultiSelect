@@ -4,10 +4,13 @@
     ViewBag.Title = "Index";
 }
 
-@using (Html.BeginForm("Action", null, FormMethod.Get))
+@using (Html.BeginForm("Do", null, FormMethod.Get))
 {
     <div class="action-bar">
-        <button type="button" class="btn" name="action" value="new" title="Create a new Supplier">New</button> 
+        <button type="submit" class="btn" name="taskName" value="New" title="Create a new Supplier">New</button> 
+        <button type="submit" class="btn" name="taskName" value="Edit" title="Edit the selected suppliers">Edit</button>
+        <button type="submit" class="btn" name="taskName" value="Duplicate" title="Duplicate the selected suppliers">Duplicate</button>
+        <button type="submit" class="btn" name="taskName" value="Delete" title="Delete the selected suppliers">Delete</button>
     </div>
     <table class="table">
         <thead>

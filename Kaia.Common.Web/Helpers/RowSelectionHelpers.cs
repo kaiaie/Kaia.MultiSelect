@@ -10,6 +10,7 @@ namespace Kaia.Common.Web.Helpers
 {
     public static class RowSelectionHelpers
     {
+        private static long controlId;
         /// <summary>
         /// Builds a checkbox that allows multiple rows in a table to be 
         /// selected
@@ -17,7 +18,18 @@ namespace Kaia.Common.Web.Helpers
         public static MvcHtmlString RowCheckboxFor(this HtmlHelper helper,
             Expression<Func<object, long>> idProperty, dynamic htmlAttributes = null)
         {
-            return MvcHtmlString.Create(@"<input type=""checkbox"">");
+            if (idProperty.NodeType != ExpressionType.Lambda)
+            {
+                throw new ArgumentException(nameof(idProperty));
+            }
+            var value = idProperty.Compile()(helper.ViewData.Model).ToString();
+
+            var inputTag = new TagBuilder("input");
+            inputTag.MergeAttribute("name", "ids");
+            inputTag.MergeAttribute("type", "checkbox");
+            inputTag.MergeAttribute("value", value);
+            inputTag.MergeAttribute("id", string.Format("id{0}", controlId++));
+            return MvcHtmlString.Create(inputTag.ToString());
         }
     }
 }

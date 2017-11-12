@@ -108,6 +108,11 @@ namespace Kaia.MultiSelect.DataAccess.Tests
                 {
                     throw new NotImplementedException();
                 }
+
+                set
+                {
+                    throw new NotImplementedException();
+                }
             }
         }
     }

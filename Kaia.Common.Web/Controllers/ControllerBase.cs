@@ -18,7 +18,7 @@ namespace Kaia.Common.Web.Controllers
         }
 
 
-        public ActionResult ViewOrPartial()
+        protected ActionResult ViewOrPartial()
         {
             if (Request.IsAjaxRequest())
             {
@@ -28,7 +28,7 @@ namespace Kaia.Common.Web.Controllers
         }
 
 
-        public ActionResult ViewOrPartial(string viewName)
+        protected ActionResult ViewOrPartial(string viewName)
         {
             if (Request.IsAjaxRequest())
             {
@@ -38,7 +38,7 @@ namespace Kaia.Common.Web.Controllers
         }
 
 
-        public ActionResult ViewOrPartial(object model)
+        protected ActionResult ViewOrPartial(object model)
         {
             if (Request.IsAjaxRequest())
             {
@@ -48,13 +48,19 @@ namespace Kaia.Common.Web.Controllers
         }
 
 
-        public ActionResult ViewOrPartial(string viewName, object model)
+        protected ActionResult ViewOrPartial(string viewName, object model)
         {
             if (Request.IsAjaxRequest())
             {
                 return PartialView(viewName, model);
             }
             return View(viewName, model);
+        }
+
+
+        protected void SetMessageText(string messageText)
+        {
+            TempData["Kaia.Message"] = messageText;
         }
     }
 }

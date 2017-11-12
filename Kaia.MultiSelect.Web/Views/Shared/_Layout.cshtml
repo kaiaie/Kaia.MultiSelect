@@ -1,4 +1,7 @@
 ﻿<!DOCTYPE html>
+@{ 
+    var messageText = (string)TempData["Kaia.Message"];
+}
 <html>
     <head>
         <meta charset="utf-8" />
@@ -6,17 +9,19 @@
         <title>@ViewBag.Title</title>
         <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     </head>
-    <body class="container">
-        <header>
-
-        </header>
-        <main>
-            @RenderBody()
-        </main>
-        <footer>
-            &copy; 2017 <a href="http://www.kaia.ie">Kaia Limited</a>. All rights 
-            reserved.
-        </footer>
-        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    </body>
+<body class="container">
+    <header></header>
+    <main>
+        @if (!string.IsNullOrEmpty(messageText))
+        {
+            <div class="alert alert-warning">@messageText</div>
+        }
+        @RenderBody()
+    </main>
+    <footer>
+        &copy; 2017 <a href="http://www.kaia.ie">Kaia Limited</a>. All rights
+        reserved.
+    </footer>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+</body>
 </html>
