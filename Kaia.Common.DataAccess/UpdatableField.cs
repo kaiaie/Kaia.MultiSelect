@@ -1,4 +1,5 @@
 ﻿using Kaia.Common.DataAccess.Contract;
+using System;
 
 namespace Kaia.Common.DataAccess
 {
@@ -6,6 +7,7 @@ namespace Kaia.Common.DataAccess
     {
         private Indeterminate<T> _oldValue;
         private T _newValue;
+        private bool _isUpdatable = true;
         private bool _isUpdated;
 
         public bool IsIndeterminate
@@ -25,6 +27,14 @@ namespace Kaia.Common.DataAccess
             }
         }
 
+        public bool IsUpdatable
+        {
+            get
+            {
+                return _isUpdatable;
+            }
+        }
+
 
         public T Value
         {
@@ -34,18 +44,27 @@ namespace Kaia.Common.DataAccess
             }
             set
             {
-                _newValue = value;
-                _isUpdated = true;
+                if (_isUpdatable)
+                {
+                    _newValue = value;
+                    _isUpdated = true;
+                }
+                else
+                {
+                    throw new Exception("Value cannot be updated");
+                }
             }
         }
 
 
-        public UpdatableField(Indeterminate<T> oldValue)
+        public UpdatableField(Indeterminate<T> oldValue, bool isUpdatable = true)
         {
             _oldValue = oldValue;
+            _isUpdatable = isUpdatable;
         }
 
-        public UpdatableField(T oldValue) : this(new Indeterminate<T>(oldValue))
+        public UpdatableField(T oldValue, bool isUpdatable = true) : 
+            this(new Indeterminate<T>(oldValue), isUpdatable)
         {
 
         }

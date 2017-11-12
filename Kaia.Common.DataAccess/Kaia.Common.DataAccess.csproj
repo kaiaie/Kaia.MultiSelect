@@ -62,7 +62,9 @@
     <Compile Include="Contract\IRepository.cs" />
     <Compile Include="Contract\IUnitOfWork.cs" />
     <Compile Include="Contract\IUpdatable.cs" />
+    <Compile Include="DataAnnotations\EntityAttribute.cs" />
     <Compile Include="DataAnnotations\TableNameAttribute.cs" />
+    <Compile Include="DataAnnotations\UniqueAttribute.cs" />
     <Compile Include="DbRepositoryBase.cs" />
     <Compile Include="DbUnitOfWorkBase.cs" />
     <Compile Include="DataAnnotations\IgnoreAttribute.cs" />

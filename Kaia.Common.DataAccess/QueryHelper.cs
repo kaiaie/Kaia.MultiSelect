@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Kaia.Common.DataAccess
 {
+    /// <summary>
+    /// Implements various helper methods for building SQL queries
+    /// </summary>
     public class QueryHelper
     {
         private static QueryHelper _queryHelper;
@@ -29,10 +32,16 @@ namespace Kaia.Common.DataAccess
         }
 
 
+        private IEnumerable<PropertyInfo> GetEntityProperties(Type t)
+        {
+            return t.GetProperties(BindingFlags.Public |
+                BindingFlags.Instance);
+        }
+
+
         private IEnumerable<PropertyInfo>GetEntityProperties<T>()
         {
-            return typeof(T).GetProperties(BindingFlags.Public | 
-                BindingFlags.Instance);
+            return GetEntityProperties(typeof(T));
         }
 
 
@@ -81,7 +90,16 @@ namespace Kaia.Common.DataAccess
 
         public string GetKeyPropertyName<T>()
         {
-            return GetEntityProperties<T>()
+            var entityType = typeof(T);
+            var entityTypeAttribute = entityType.GetCustomAttributes()
+                .FirstOrDefault(a => a.GetType() == typeof(EntityAttribute))
+                as EntityAttribute;
+            if (entityTypeAttribute != null)
+            {
+                entityType = entityTypeAttribute.EntityType;
+            }
+
+            return GetEntityProperties(entityType)
                 .First(p => p.GetCustomAttributes() // XXX Assume only one key (for now!)
                     .Any(a => a.GetType() == typeof(KeyAttribute)))
                 .Name;
@@ -94,13 +112,12 @@ namespace Kaia.Common.DataAccess
         }
 
 
-        public IEnumerable<PropertyInfo> GetUpdatedProperties<T>(T entityModifier)
+        public IEnumerable<PropertyInfo> GetUpdatableProperties<T>()
             where T : IEntityModifier
         {
-            return typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            return GetEntityProperties<T>()
                 .Where(pi => pi.PropertyType.IsGenericType &&
-                    pi.PropertyType.GetGenericTypeDefinition() == typeof(UpdatableField<>) && 
-                    ((IUpdatable)pi.GetValue(entityModifier)).IsUpdated);
+                    pi.PropertyType.GetGenericTypeDefinition() == typeof(UpdatableField<>));
         }
 
 
@@ -141,14 +158,25 @@ namespace Kaia.Common.DataAccess
             return new QueryComponents(result.ToString());
         }
 
+
         public QueryComponents GetSelectManyQuery<T>(IEnumerable<long> ids)
+        {
+            var @params = new DynamicParameters();
+            var sql = string.Concat(GetSelectAllQuery<T>().Sql,
+                 " WHERE ", GetIdsWhereClause<T>(ids, @params).Sql);
+            return new QueryComponents(sql, @params);
+        }
+
+
+        public QueryComponents GetIdsWhereClause<T>(IEnumerable<long> ids, 
+            DynamicParameters @params = null)
         {
             // According to Dapper doc, it should be possible to pass an 
             // IEnumerable as a parameter to one of the Query methods and have 
             // it do the Right Thing but it throws an error with SQLite which 
             // doesn't seem to like parameterised IN expressions... do it the 
             // long way :-(
-            var @params = new DynamicParameters();
+            if (@params == null) @params = new DynamicParameters();
             var paramNames = new List<string>();
             var paramNo = 1;
             foreach (var id in ids)
@@ -159,28 +187,111 @@ namespace Kaia.Common.DataAccess
                 paramNo++;
             }
             var keyColumnName = GetKeyColumnName<T>();
-            var sql = string.Concat(GetSelectAllQuery<T>().Sql,
-                 " WHERE ", string.Join(" OR ",
-                    paramNames.Select(s => string.Format("{0} = {1}", keyColumnName, s))));
+            var sql = string.Join(" OR ",
+                paramNames.Select(s => string.Format("{0} = {1}", keyColumnName, s)));
             return new QueryComponents(sql, @params);
         }
+
 
         public QueryComponents GetDeleteQuery<T>(T entitiesToUpdate)
             where T : IEntityModifier
         {
-            throw new NotImplementedException();
+            var @params = new DynamicParameters();
+            var sql = string.Concat("DELETE FROM ", GetTableName<T>(), 
+                "WHERE ", GetIdsWhereClause<T>(entitiesToUpdate.Ids, @params).Sql);
+            return new QueryComponents(sql, @params);
         }
+
 
         public QueryComponents GetDuplicateQuery<T>(T entitiesToUpdate)
             where T : IEntityModifier
         {
-            throw new NotImplementedException();
+            var tableName = GetTableName<T>();
+            var @params = new DynamicParameters();
+            var props = GetUpdatableProperties<T>();
+            var insertColsSql = string.Concat("INSERT INTO ", tableName, 
+                Environment.NewLine, "(", 
+                string.Join(", ", props.Select(p => p.Name.ToSnakeCaseLower())), 
+                ")");
+            var selectSql = new StringBuilder(" SELECT ");
+            var isFirst = true;
+            foreach (var prop in props)
+            {
+                if (!isFirst) selectSql.Append(", ");
+                if (IsPropertyUpdated(prop, entitiesToUpdate))
+                {
+                    selectSql.AppendFormat("@{0} AS {1}", prop.Name, 
+                        prop.Name.ToSnakeCaseLower());
+                    @params.Add(prop.Name, GetUpdatablePropertyValue(prop, 
+                        entitiesToUpdate));
+                }
+                else
+                {
+                    selectSql.Append(prop.Name.ToSnakeCaseLower());
+                }
+                isFirst = false;
+            }
+            selectSql.Append(" FROM ").Append(tableName);
+            var whereClause = GetIdsWhereClause<T>(entitiesToUpdate.Ids, @params);
+            return new QueryComponents(
+                string.Concat(insertColsSql, selectSql.ToString(), " WHERE ", 
+                    whereClause.Sql), 
+                @params);
         }
+
+
+        private object GetUpdatablePropertyValue(PropertyInfo pi, object obj)
+        {
+            var propValue = pi.GetValue(obj);
+            var propType = propValue.GetType();
+            var propProp = propType.GetProperty("Value",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (propProp != null)
+            {
+                return propProp.GetValue(propValue);
+            }
+            return null;
+        }
+
+
+        private bool IsPropertyUpdated(PropertyInfo pi, object obj)
+        {
+            var result = false;
+            var propVal = pi.GetValue(obj) as IUpdatable;
+            if (propVal != null)
+            {
+                return propVal.IsUpdated;
+            }
+            return result;
+        }
+
 
         public QueryComponents GetUpdateQuery<T>(T entitiesToUpdate)
             where T : IEntityModifier
         {
-            throw new NotImplementedException();
+            var tableName = GetTableName<T>();
+            var @params = new DynamicParameters();
+            var props = GetUpdatableProperties<T>();
+            var updateSql = string.Concat("UPDATE ", tableName);
+            var setSql = new StringBuilder(" SET ");
+            var isFirst = true;
+            foreach (var prop in props)
+            {
+                if (!isFirst) setSql.Append(", ");
+                if (IsPropertyUpdated(prop, entitiesToUpdate))
+                {
+                    setSql.AppendFormat("{1} = @{0}", prop.Name,
+                        prop.Name.ToSnakeCaseLower());
+                    @params.Add(prop.Name, GetUpdatablePropertyValue(prop,
+                        entitiesToUpdate));
+                    isFirst = false;
+                }
+            }
+            var whereClause = GetIdsWhereClause<T>(entitiesToUpdate.Ids, @params);
+            return new QueryComponents(
+                string.Concat(updateSql, setSql.ToString(), " WHERE ",
+                    whereClause.Sql),
+                @params);
         }
     }
 }

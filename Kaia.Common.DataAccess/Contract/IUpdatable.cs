@@ -5,6 +5,8 @@
     /// </summary>
     public interface IUpdatable
     {
+        bool IsUpdatable { get; }
+
         bool IsUpdated { get; }
     }
 }

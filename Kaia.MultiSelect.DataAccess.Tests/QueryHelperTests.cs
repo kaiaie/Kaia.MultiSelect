@@ -4,6 +4,7 @@ using Kaia.Common.DataAccess.Contract;
 using Kaia.Common.DataAccess;
 using System.Collections.Generic;
 using Kaia.MultiSelect.Domain;
+using System.Linq;
 
 namespace Kaia.MultiSelect.DataAccess.Tests
 {
@@ -43,6 +44,52 @@ namespace Kaia.MultiSelect.DataAccess.Tests
             Assert.IsTrue(sut.SupplierName.IsIndeterminate);
             Assert.IsFalse(sut.City.IsIndeterminate);
             Assert.AreEqual("Dublin", sut.City.Value);
+        }
+
+        [TestMethod]
+        public void GettingUpdateQueryWorks()
+        {
+            // Arrange
+            var entities = new Supplier[]
+            {
+                new Supplier(1, "Tom", 10, "Dublin"),
+                new Supplier(2, "Pat", 20, "London"),
+                new Supplier(3, "Harry", 30, "London")
+            };
+            var modifier = entities.Where(s => s.City == "London").GetModifier();
+            modifier.City.Value = "Berlin";
+            modifier.ModificationType = ModificationType.Update;
+
+            // Act
+            var sut = QueryHelper.Default.GetUpdateQuery(modifier);
+
+            // Assert
+            Assert.IsNotNull(sut);
+            Assert.IsFalse(string.IsNullOrEmpty(sut.Sql));
+            Assert.IsNotNull(sut.Parameters);
+        }
+
+        [TestMethod]
+        public void GettingDuplicateQueryWorks()
+        {
+            // Arrange
+            var entities = new Supplier[]
+            {
+                new Supplier(1, "Tom", 10, "Dublin"),
+                new Supplier(2, "Pat", 20, "London"),
+                new Supplier(3, "Harry", 30, "London")
+            };
+            var modifier = entities.Where(s => s.City == "London").GetModifier();
+            modifier.City.Value = "Berlin";
+            modifier.ModificationType = ModificationType.Duplicate;
+
+            // Act
+            var sut = QueryHelper.Default.GetDuplicateQuery(modifier);
+
+            // Assert
+            Assert.IsNotNull(sut);
+            Assert.IsFalse(string.IsNullOrEmpty(sut.Sql));
+            Assert.IsNotNull(sut.Parameters);
         }
 
         class StubModifier : IEntityModifier

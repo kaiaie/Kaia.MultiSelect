@@ -1,5 +1,6 @@
 ﻿using Kaia.Common.DataAccess;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kaia.MultiSelect.Domain
 {
@@ -55,7 +56,8 @@ namespace Kaia.MultiSelect.Domain
             }
             var result = new SupplierModifier(ids)
             {
-                SupplierName = new UpdatableField<string>(supplierName),
+                SupplierName = new UpdatableField<string>(supplierName, 
+                    ids.Count > 1), // Can only update if modifying a single entity
                 Status = new UpdatableField<long>(status),
                 City = new UpdatableField<string>(city)
             };

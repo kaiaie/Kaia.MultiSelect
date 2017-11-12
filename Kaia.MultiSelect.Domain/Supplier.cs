@@ -8,7 +8,8 @@ namespace Kaia.MultiSelect.Domain
     /// Represents a Supplier in the database
     /// </summary>
     /// <remarks>
-    /// This class is immutable. Call GetModifier to get a modifiable object
+    /// This class is immutable. Call the GetModifier extension method to get 
+    /// a modifiable object
     /// </remarks>
     public sealed class Supplier : ILookup
     {
@@ -19,6 +20,7 @@ namespace Kaia.MultiSelect.Domain
 
         [Key]
         public long SupplierId { get { return _supplierId; } }
+        [Unique]
         public string SupplierName { get { return _supplierName; } }
         public long Status { get { return _status; } }
         public string City { get { return _city; } }

@@ -1,9 +1,11 @@
 ﻿using Kaia.Common.DataAccess.Contract;
 using System.Collections.Generic;
 using Kaia.Common.DataAccess;
+using Kaia.Common.DataAccess.DataAnnotations;
 
 namespace Kaia.MultiSelect.Domain
 {
+    [Entity(typeof(Supplier))]
     public sealed class SupplierModifier : IEntityModifier
     {
         private List<long> _ids;
