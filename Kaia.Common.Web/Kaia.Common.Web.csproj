@@ -76,6 +76,7 @@
     <Compile Include="CommonTasks.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\MultiSelectControllerBase.cs" />
+    <Compile Include="Helpers\MultiSelectFieldHelpers.cs" />
     <Compile Include="Helpers\RowSelectionHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

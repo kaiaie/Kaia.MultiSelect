@@ -1,21 +1,27 @@
-﻿@model Kaia.MultiSelect.Domain.NewSupplier
+﻿@model Kaia.MultiSelect.Domain.SupplierModifier
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Edit";
 }
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm(FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    
+
+    foreach (var item in Model.Ids)
+    {
+        @Html.HiddenFor(m => item)
+    }
+
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
         <div class="form-group">
             @Html.LabelFor(model => model.SupplierName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.SupplierName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.MultiSelectTextBoxFor(model => model.SupplierName)
                 @Html.ValidationMessageFor(model => model.SupplierName, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -23,7 +29,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.MultiSelectTextBoxFor(model => model.Status)
                 @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -31,19 +37,20 @@
         <div class="form-group">
             @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.MultiSelectTextBoxFor(model => model.City)
                 @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
             </div>
         </div>
 
+        @if (Layout != null)
+        {
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" /> 
+                @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
             </div>
         </div>
+        }
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>

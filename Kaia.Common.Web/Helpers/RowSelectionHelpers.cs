@@ -15,10 +15,11 @@ namespace Kaia.Common.Web.Helpers
         /// Builds a checkbox that allows multiple rows in a table to be 
         /// selected
         /// </summary>
-        public static MvcHtmlString RowCheckboxFor(this HtmlHelper helper,
-            Expression<Func<object, long>> idProperty, dynamic htmlAttributes = null)
+        public static MvcHtmlString RowCheckboxFor<TModel>(this HtmlHelper<TModel> helper,
+            Expression<Func<TModel, long>> idProperty, dynamic htmlAttributes = null)
         {
-            if (idProperty.NodeType != ExpressionType.Lambda)
+            if (idProperty.NodeType != ExpressionType.Lambda || 
+                idProperty.Body.NodeType != ExpressionType.MemberAccess)
             {
                 throw new ArgumentException(nameof(idProperty));
             }
