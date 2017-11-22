@@ -10,10 +10,12 @@
 {
     @Html.AntiForgeryToken()
 
-    foreach (var item in Model.Ids)
+    foreach (var id in Model.Ids)
     {
-        @Html.HiddenFor(m => item)
+        @Html.HiddenFor(m => id)
     }
+
+    @Html.HiddenFor(m => m.ModificationType)
 
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })

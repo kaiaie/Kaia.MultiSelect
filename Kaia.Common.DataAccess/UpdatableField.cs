@@ -63,10 +63,19 @@ namespace Kaia.Common.DataAccess
             _isUpdatable = isUpdatable;
         }
 
+
         public UpdatableField(T oldValue, bool isUpdatable = true) : 
             this(new Indeterminate<T>(oldValue), isUpdatable)
         {
 
         }
+
+
+        public UpdatableField(bool isUpdatable = true) :
+            this(new Indeterminate<T>(), isUpdatable)
+        {
+
+        }
+
     }
 }

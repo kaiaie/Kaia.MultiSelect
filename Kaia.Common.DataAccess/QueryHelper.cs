@@ -301,9 +301,9 @@ namespace Kaia.Common.DataAccess
             var isFirst = true;
             foreach (var prop in props)
             {
-                if (!isFirst) setSql.Append(", ");
                 if (IsPropertyUpdated(prop, entitiesToUpdate))
                 {
+                    if (!isFirst) setSql.Append(", ");
                     setSql.AppendFormat("{1} = @{0}", prop.Name,
                         prop.Name.ToSnakeCaseLower());
                     @params.Add(prop.Name, GetUpdatablePropertyValue(prop,
