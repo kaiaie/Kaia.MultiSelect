@@ -30,6 +30,9 @@ namespace Kaia.Common.Web.Helpers
             inputTag.MergeAttribute("type", "checkbox");
             inputTag.MergeAttribute("value", value);
             inputTag.MergeAttribute("id", string.Format("id{0}", controlId++));
+            IDictionary<string, string> properties = 
+                TagBuilderExtensions.DynamicToProperties(htmlAttributes);
+            inputTag.AddCustomHtmlAttributes(properties);
             return MvcHtmlString.Create(inputTag.ToString());
         }
     }

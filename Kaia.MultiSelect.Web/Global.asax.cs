@@ -58,6 +58,7 @@ namespace Kaia.MultiSelect.Web
 
         protected void ConfigureBinders()
         {
+            LoadAllReferencedAssemblies();
             foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic)
                 .SelectMany(a => a.GetExportedTypes()
@@ -65,6 +66,26 @@ namespace Kaia.MultiSelect.Web
                         t.GetInterfaces().Any(i => i == typeof(IEntityModifier)))))
             {
                 ModelBinders.Binders.Add(type, new EntityModifierBinder());
+            }
+        }
+
+        protected void LoadAllReferencedAssemblies()
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                LoadReferencedAssembly(assembly);
+            }
+        }
+
+        protected void LoadReferencedAssembly(Assembly assembly)
+        {
+            foreach (AssemblyName name in assembly.GetReferencedAssemblies())
+            {
+                if (!AppDomain.CurrentDomain.GetAssemblies()
+                    .Any(a => a.FullName == name.FullName))
+                {
+                    LoadReferencedAssembly(Assembly.Load(name));
+                }
             }
         }
     }

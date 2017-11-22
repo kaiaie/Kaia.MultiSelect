@@ -80,6 +80,7 @@
     <Compile Include="Helpers\MultiSelectFieldHelpers.cs" />
     <Compile Include="Helpers\RowSelectionHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TagBuilderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,5 +1,6 @@
 ﻿using Kaia.Common.DataAccess;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 
@@ -37,7 +38,7 @@ namespace Kaia.Common.Web.Helpers
                 string.Format("{0}_OldValue", fieldName));
             oldValueElement.MergeAttribute("type", "hidden");
             oldValueElement.MergeAttribute("class", "kaia-ms-old");
-            if (fieldValue.IsIndeterminate || !fieldValue.IsUpdated)
+            if (fieldValue.IsIndeterminate)
             {
                 oldValueElement.MergeAttribute("value", MultiSelectMessage);
             }
@@ -47,7 +48,7 @@ namespace Kaia.Common.Web.Helpers
             }
 
             var newValueElement = new TagBuilder("input");
-            // TODO: Add better intelligent input types, e.g., bassed on 
+            // TODO: Add better intelligent input types, e.g., based on 
             // DataTypeAttribute
             newValueElement.MergeAttribute("name",
                 string.Format("{0}_NewValue", fieldName));
@@ -57,7 +58,7 @@ namespace Kaia.Common.Web.Helpers
             {
                 newValueElement.MergeAttribute("readonly", "readonly");
             }
-            if (fieldValue.IsUpdated)
+            if (fieldValue.IsUpdated || !fieldValue.IsIndeterminate)
             {
                 newValueElement.MergeAttribute("value", fieldValue.Value.ToString());
             }
@@ -65,6 +66,9 @@ namespace Kaia.Common.Web.Helpers
             {
                 newValueElement.MergeAttribute("value", MultiSelectMessage);
             }
+            IDictionary<string, string> properties =
+                TagBuilderExtensions.DynamicToProperties(htmlAttributes);
+            newValueElement.AddCustomHtmlAttributes(properties);
 
             var controlElement = new TagBuilder("span");
             controlElement.MergeAttribute("class", "kaia-ms-ctl");
